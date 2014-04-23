@@ -2,7 +2,7 @@
 
 #Run the list command and create array
 
-FILESET=($(ls /))
+FILESET=($(mmlsfileset mogpfs | awk '{print $1}'))
 
 #Show the array Size
 
@@ -32,19 +32,31 @@ do
     printf "%4d: %s\n" $index ${FILESET[$index]}
 done
 
-#Create Array from each Item
-#for item in ${FILESET[@]}
+#For Item in Fileset define Usage, Hard Quota and Percentage used
 
-for item in ${FILESET[@]};
+echo "quota for fileset"
+
+for item in ${FILESET[@]:2};
 do
-	let $item[$n]= ( inuse soft hard )
-	((++n))
+	echo "your current usage is"
+	USAGE=$(mmlsquota -j $item mogpfs | grep mogpfs 
+		if [ $3 -eq 0 ]; 
+		then echo "No Limit"
+		else awk '{print $3/1024/1024}')
+		fi
+	printf "   %s\n" $USAGE
+	
+	echo "your hard quota is"
+	HARD=$(mmlsquota -j $item mogpfs | grep mogpfs 
+		if [ $5 -eq 0 ];
+		then echo "No Limit" 
+		else awk '{print $5/1024/1024}')
+		fi
+	printf "   %s\n" $HARD
+	
+	echo "your percentage usage is"
+	PERCENTAGE=$(awk '{print $USAGE/$HARD"%"}')
+	printf "   %s\n" $PERCENTAGE;
 done
-
-for item in ${FILESET[@]};
-do
-	var=$item[$n]
-	echo ${!var}
-	((++n))
-done
-
+	
+	
