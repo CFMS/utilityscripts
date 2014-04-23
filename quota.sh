@@ -2,7 +2,7 @@
 
 #Run the list command and create array
 
-FILESET=($(ls))
+FILESET=($(ls /))
 
 #Show the array Size
 
@@ -33,8 +33,18 @@ do
 done
 
 #Create Array from each Item
-for item in ${FILESET[@]}
-	do
-		
+#for item in ${FILESET[@]}
+
+for item in ${FILESET[@]};
+do
+	let $item[$n]= ( inuse soft hard )
+	((++n))
+done
+
+for item in ${FILESET[@]};
+do
+	var=$item[$n]
+	echo ${!var}
+	((++n))
 done
 
