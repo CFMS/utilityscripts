@@ -39,15 +39,15 @@ echo "quota for fileset"
 for item in ${FILESET[@]:2};
 do
 	echo "your current usage is"
-	USAGE=$(mmlsquota -j $item mogpfs | grep mogpfs 
-		if [ $3 -eq 0 ]; 
+	USAGE=$(mmlsquota -j $item mogpfs | grep mogpfs | awk '{print $3}'
+		if [ $3 -eq no ]; 
 		then echo "No Limit"
 		else awk '{print $3/1024/1024}')
 		fi
 	printf "   %s\n" $USAGE
 	
 	echo "your hard quota is"
-	HARD=$(mmlsquota -j $item mogpfs | grep mogpfs 
+	HARD=$(mmlsquota -j $item mogpfs | grep mogpfs | awk '{print $5}'
 		if [ $5 -eq 0 ];
 		then echo "No Limit" 
 		else awk '{print $5/1024/1024}')
