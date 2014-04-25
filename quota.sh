@@ -36,32 +36,27 @@ done
 
 echo "quota for fileset"
 
+
 for item in ${FILESET[@]:2}
 do
 	echo "your current usage is"
-	USAGE=$(mmlsquota -j $item mogpfs | grep mogpfs |
-		if [ $3 -eq no ]
-		then echo "No Limit"
-		else awk '{print $3/1024/1024}')
-	printf "   %s\n" $USAGE
+	USAGE_VAL=`mmlsquota -j $item mogpfs | grep mogpfs | awk -v N=3 '{print $N}'`
+	if [ $USAGE_VAL == 'no' ]; then usage="No Limit" ; else usage=`expr $USAGE_VAL / 1024 / 1024`; fi
+	echo $usage"GB"
 done
 
 for item in ${FILESET[@]:2}
 do
 	echo "your hard quota is"
-	HARD=$(mmlsquota -j $item mogpfs | grep mogpfs |
-		if [ $3 -eq no ]
-		then echo "No Limit" 
-		else awk '{print $5/1024/1024}')
-	printf "   %s\n" $HARD
+	HARD_VAL=`mmlsquota -j $item mogpfs | grep mogpfs | awk -v N=5 '{print $N}'`
+	if [ $HARD_VAl == 'no' ]; then hard="No Limit" ; else hard=`expr $HARD_VAL / 1024 / 1024`; fi
+	echo $hard"GB"
 done	
-	
+
 for item in ${FILESET[@]:2}
 do	
 	echo "your percentage usage is"
-	PERCENTAGE=$(
-	    if [ $HARD -eq No Limit ]
-		then echo "No Percentage" 
-		else awk '{print $USAGE/$HARD"%"}')
-	printf "   %s\n" $PERCENTAGE
+	PERCENTAGE_VAL=`expr $usage / $hard`
+	if [ $HARD_VAL == 'no' ]; then percentage="No Limit" ; else percentage=$PERCENTAGE_VAL; fi
+	echo $percentage"%"
 done
