@@ -39,24 +39,19 @@ echo "quota for fileset"
 
 for item in ${FILESET[@]:2}
 do
-	echo "your current usage is"
+	echo $item "your current usage is"
 	USAGE_VAL=`mmlsquota -j $item mogpfs | grep mogpfs | awk -v N=3 '{print $N}'`
 	if [ $USAGE_VAL == 'no' ]; then usage="No Limit" ; else usage=`expr $USAGE_VAL / 1024 / 1024`; fi
 	echo $usage"GB"
-done
-
-for item in ${FILESET[@]:2}
-do
-	echo "your hard quota is"
-	HARD_VAL=`mmlsquota -j $item mogpfs | grep mogpfs | awk -v N=5 '{print $N}'`
-	if [ $HARD_VAl == 'no' ]; then hard="No Limit" ; else hard=`expr $HARD_VAL / 1024 / 1024`; fi
+	
+	echo $item "your hard quota is"
+	HARD_VAL=`mmlsquota -j $item mogpfs | grep gpfs | awk -v N=5 '{print $N}'`
+	if [ $HARD_VAL == '' ]; then hard="No Limit" ; else hard=`expr $HARD_VAL / 1024 / 1024`; fi
 	echo $hard"GB"
-done	
-
-for item in ${FILESET[@]:2}
-do	
-	echo "your percentage usage is"
-	PERCENTAGE_VAL=`expr $usage / $hard`
-	if [ $HARD_VAL == 'no' ]; then percentage="No Limit" ; else percentage=$PERCENTAGE_VAL; fi
+	
+	echo $item "your percentage usage is'
+	PERCENTAGE_VAL= echo "scale=2; $usage*100/$hard" | bc
+	if [ $PERCENTAGE_VAL == 'no' ]; then percentage="No Limit" ; else percentage=$PERCENTAGE_VAL; fi
 	echo $percentage"%"
 done
+
