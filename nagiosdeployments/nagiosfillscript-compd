@@ -1,0 +1,16 @@
+#!/bin/bash
+
+
+for I in {047..240}
+do
+cat << EOF > compa$I.cfg
+
+define host{
+	use		compute-node
+	hostname	compa$I
+	alias		compa$I
+	address		compa$I
+	hostgroups	compute-a
+}
+EOF
+done

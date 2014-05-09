@@ -41,17 +41,15 @@ for item in ${FILESET[@]:2}
 do
 	echo $item "your current usage is"
 	USAGE_VAL=`mmlsquota -j $item mogpfs | grep mogpfs | awk -v N=3 '{print $N}'`
-	if [ $USAGE_VAL == 'no' ]; then usage="No Limit" ; else usage=`expr $USAGE_VAL / 1024 / 1024`; fi
+	if [ $USAGE_VAL == 'no' ]; then usage="0" ; else usage=`expr $USAGE_VAL / 1024 / 1024`; fi
 	echo $usage"GB"
 	
 	echo $item "your hard quota is"
 	HARD_VAL=`mmlsquota -j $item mogpfs | grep gpfs | awk -v N=5 '{print $N}'`
-	if [ $HARD_VAL == '' ]; then hard="No Limit" ; else hard=`expr $HARD_VAL / 1024 / 1024`; fi
+	if [ -z $HARD_VAL ] ; then hard="0" ; else hard=`expr $HARD_VAL / 1024 / 1024`; fi
 	echo $hard"GB"
 	
-	echo $item "your percentage usage is'
-	PERCENTAGE_VAL= echo "scale=2; $usage*100/$hard" | bc
-	if [ $PERCENTAGE_VAL == 'no' ]; then percentage="No Limit" ; else percentage=$PERCENTAGE_VAL; fi
-	echo $percentage"%"
+	echo $item "your percentage usage is"
+	if [ -z $HARD_VAL ] ; then percentage="0" ; else PERCENTAGE_VAL= echo "scale=2; $usage*100/$hard" | bc | echo "%"; fi
 done
 
