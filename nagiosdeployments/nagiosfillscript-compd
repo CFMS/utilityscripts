@@ -1,16 +1,17 @@
 #!/bin/bash
 
 
-for I in {047..240}
+for I in {nodels compd}
 do
-cat << EOF > compa$I.cfg
+touch /etc/nagiosi/nodes/compute-nodes/compd$I.cfg
+cat << EOF > /etc/nagios/nodes/compute-nodes/compd$I.cfg
 
 define host{
 	use		compute-node
-	hostname	compa$I
-	alias		compa$I
-	address		compa$I
-	hostgroups	compute-a
+	hostname	compd$I
+	alias		compd$I
+	address		compd$I
+	hostgroups	compute-d
 }
 EOF
 done
