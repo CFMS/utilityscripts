@@ -8,7 +8,7 @@ cat << EOF > /etc/nagios/nodes/compute-nodes/compd$I.cfg
 
 define host{
 	use		compute-node
-	hostname	compd$I
+	host_name	compd$I
 	alias		compd$I
 	address		compd$I
 	hostgroups	compute-d

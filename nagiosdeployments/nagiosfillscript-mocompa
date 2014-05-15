@@ -3,14 +3,14 @@
 
 for I in {nodels compa}
 do
-touch /etc/nagios/nodes/compute-nodes/compa$I.cfg
-cat << EOF > /etc/nagios/nodes/compute-nodes/compa$I.cfg
+touch /etc/nagios/nodes/compute-nodes/mocompa$I.cfg
+cat << EOF > /etc/nagios/nodes/compute-nodes/mocompa$I.cfg
 
 define host{
 	use		compute-node
-	host_name	compa$I
-	alias		compa$I
-	address		compa$I
+	host_name	mocompa$I
+	alias		mocompa$I
+	address		mocompa$I
 	hostgroups	compute-a
 }
 EOF
