@@ -1,8 +1,10 @@
 #
 # ## Description:
 #
-# This plugin users repquota command to get the quota values
-# From the repqut output see the quota state as to what  ( ++ , +- , -- ) and identifies the Exit Stats for nagios
+# This plugin is used to monitor fileset quota's for GPFS filesystems. It use's mmlsfileset and mmlsquota.
+# You need to use this on a node that has permissions to use mmlsfileset and mmlsquota commands, such as a management node or a storage 
+# node. It will output a general ok, warning or critical, but will also output each individual filesets current usage, hard quota and the
+# percentage used.
 #
 # ## Output:
 #
@@ -37,7 +39,7 @@ print_usage() {
 print_help() {
     print_version
     echo ""
-    echo "Plugin for Nagios to check user quota"
+    echo "Plugin for Nagios to check mmlsquota"
     echo ""
     print_usage
     echo ""
@@ -73,58 +75,41 @@ while test -n "$1"; do
     shift
 done
 
-OKUSERS=""
-WARNUSER=""
-CRITUSER=""
-PREVUSER=""
-
-
-FILESET=($(mmlsfileset mogpfs))
+FILESET=($(/usr/lpp/mmfs/bin/mmlsfileset mogpfs | awk '{print $1}'))
 
 for item in ${FILESET[@]:2}
 do
     
-USAGE_VAL=`mmlsquota -j $item mogpfs | grep mogpfs | awk -v N=3 '{print $N}'`
+USAGE_VAL=`/usr/lpp/mmfs/bin/mmlsquota -j $item mogpfs | grep mogpfs | awk -v N=3 '{print $N}'`
         
 if [ $USAGE_VAL == 'no' ]; then usage="0" ; else usage=`expr $USAGE_VAL / 1024 / 1024`; fi
     
 
-HARD_VAL=`mmlsquota -j $item mogpfs | grep gpfs | awk -v N=5 '{print $N}'`
+HARD_VAL=`/usr/lpp/mmfs/bin/mmlsquota -j $item mogpfs | grep mogpfs | awk -v N=5 '{print $N}'`
         
 if [ -z $HARD_VAL ] ; then hard="0" ; else hard=`expr $HARD_VAL / 1024 / 1024`; fi
     
 
-if [ -z $HARD_VAL ] ; then percentage="0" ; else percentage=`echo scale=2 "$usage*100/$hard" | bc`; fi
+if [ -z $HARD_VAL ] ; then percentage="0" ; else percentage=$(($usage * 100 /$hard));  fi
 
-
-if [ "$percentage" -eq "95" ]
+if [[ $percentage -gt 90 && $percentage -lt 95 ]]
         then
-             WARNUSER=$WARNUSER:$PREVUSER
-        fi
-if [ "$percentage" -eq "100" ]
+            mesg="WARNING - $usage GB used, $hard GB total, $percentage %"
+            exitstatus=$STATE_WARNING
+    	fi
+if [[ $percentage -gt 98 ]]
         then
-         CRITUSER=$CRITUSER:$PREVUSER
+         	mesg="CRITICAL - $usage GB used, $hard GB total, $percentage %"
+    	 	exitstatus=$STATE_CRITICAL
         fi
-if [ "$percentage" -ne "95" ]
+if [[ $percentage -lt 90 ]]
        then
-          OKUSERS=$OKUSERS:$PREVUSER
+          	mesg="OK - $usage GB used, $hard GB total, $percentage %"
+    		exitstatus=$STATE_OK
        fi
 
-    PREVUSER=$percentage
+echo -e "$item $mesg"
 done
-if [ $CRITUSER ]; then
-    mesg="CRITICAL - $usage, $hard, $percentage"
-    exitstatus=$STATE_CRITICAL
-elif [ $WARNUSER ]; then
-    mesg="WARNING - $usage, $hard, $percentage"
-    exitstatus=$STATE_WARNING
-else
-    mesg="OK - $usage, $hard, $percentage"
-    exitstatus=$STATE_OK
-fi
-
-##msgs="CRITUSER : $CRITUSER \nWARNUSER : $WARNUSER \nOKUSERS : $OKUSERS"
-echo -e "$mesg $msgs"
 exit $exitstatus
 
  # vim: autoindent number ts=4
