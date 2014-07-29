@@ -32,9 +32,10 @@ print_version() {
 }
 
 print_usage() {
-    echo "Usage: $PROGNAME [-h|-V]"; echo ""
-    echo "  -h, --help"; echo "          print the help message and exit"
-    echo "  -V, --version"; echo "          print version and exit"
+    echo "Usage: $PROGNAME [-h|-V|-C]"; echo ""
+    echo "  -C"; echo "		 Defines the Cluster Name of your GPFS Cluster"
+    echo "  -h"; echo "          print the help message and exit"
+    echo "  -V"; echo "          print version and exit"
 }
 print_help() {
     print_version
@@ -48,44 +49,38 @@ print_help() {
 # Grab the command line arguments
 
 exitstatus=$STATE_WARNING #default
-while test -n "$1"; do
-    case "$1" in
-        --help)
-            print_help
-            exit $STATE_OK
-            ;;
-        -h)
-            print_help
-            exit $STATE_OK
-            ;;
-        --version)
-            print_version
-            exit $STATE_OK
-            ;;
-        -V)
-            print_version
-            exit $STATE_OK
-            ;;
-        *)
-            echo "Unknown argument: $1"
-            print_usage
-            exit $STATE_UNKNOWN
-            ;;
-    esac
-    shift
+
+while getopts "h:V:C:" o; do
+        case "${o}" in
+                C)
+                        export CLUSTERNAME=${OPTARG}
+                        ;;
+                h)
+                        print_help
+			exit $STATE_OK
+			;;
+                V)
+                        print_version
+			exit $STATE_OK
+			;;
+                *)
+                        print_usage
+			exit $STATE_UNKNOWN
+                        ;;
+        esac
 done
 
-FILESET=($(/usr/lpp/mmfs/bin/mmlsfileset mogpfs | awk '{print $1}'))
+FILESET=($(/usr/lpp/mmfs/bin/mmlsfileset $CLUSTERNAME | awk '{print $1}'))
 
 for item in ${FILESET[@]:2}
 do
     
-USAGE_VAL=`/usr/lpp/mmfs/bin/mmlsquota -j $item mogpfs | grep mogpfs | awk -v N=3 '{print $N}'`
+USAGE_VAL=`/usr/lpp/mmfs/bin/mmlsquota -j $item $CLUSTERNAME | grep $CLUSTERNAME | awk -v N=3 '{print $N}'`
         
 if [ $USAGE_VAL == 'no' ]; then usage="0" ; else usage=`expr $USAGE_VAL / 1024 / 1024`; fi
     
 
-HARD_VAL=`/usr/lpp/mmfs/bin/mmlsquota -j $item mogpfs | grep mogpfs | awk -v N=5 '{print $N}'`
+HARD_VAL=`/usr/lpp/mmfs/bin/mmlsquota -j $item $CLUSTERNAME | grep $CLUSTERNAME | awk -v N=5 '{print $N}'`
         
 if [ -z $HARD_VAL ] ; then hard="0" ; else hard=`expr $HARD_VAL / 1024 / 1024`; fi
     
