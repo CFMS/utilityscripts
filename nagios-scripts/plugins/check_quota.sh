@@ -108,12 +108,7 @@ if [[ $ITEM_STATE == 'ok' ]]
 	then
 		$exitstatus=0
 	else
-		if [[ $ITEM_STATE == 'warning' ]]
-			then
-				$exitstatus=1
-		else
-			$exitstatus=2
-		fi
+		$exitstatus=1
 	fi
 done
 
