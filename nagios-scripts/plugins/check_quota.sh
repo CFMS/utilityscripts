@@ -107,9 +107,9 @@ done
 
 if [[ $ITEM_STATE == "ok" ]]
 	then
-		$exitstatus=0
+		exitstatus=0
 	else
-		$exitstatus=1
+		exitstatus=1
 	fi
 done
 
