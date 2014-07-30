@@ -102,7 +102,7 @@ if [[ $percentage -lt 90 ]]
 		mesg="$usage GB used, $hard GB total, $percentage %"
 	fi
 
-if [[ $item_state == 'Warning' && 'critical' ]]
+if [[ $item_state -ne 'Warning' && 'critical' ]]
 	then
 		exitstatus='0'
 	else
