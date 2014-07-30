@@ -106,7 +106,7 @@ if [[ $item_state -ne 'Warning' && 'critical' ]]
 	then
 		exitstatus='0'
 	else
-		if [[ $item_state == 'Warning' ]]
+		if [[ $item_state -eq 'Warning' ]]
 			then
 				exitstatus='1'
 			else
