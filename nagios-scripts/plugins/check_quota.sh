@@ -103,7 +103,7 @@ if [[ $percentage -lt 90 ]]
 	fi
 
 echo -e "$item $mesg"
-done
+
 if [[ $ITEM_STATE == 'ok' ]]
 	then
 		$exitstatus=0
