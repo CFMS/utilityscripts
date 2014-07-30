@@ -105,6 +105,8 @@ if [[ $percentage -lt 90 ]]
 echo -e "$item $item_state $mesg"
 
 done
+
+echo $item_state
 if [[ $item_state == 'Warning' ]]
 	then
 		exitstatus=1
