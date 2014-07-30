@@ -111,7 +111,10 @@ if [[ $ITEM_STATE == "ok" ]]
 	else
 		exitstatus=1
 	fi
+echo $exitstatus
+
 done
+
 
 exit $exitstatus
 
