@@ -106,17 +106,16 @@ echo -e "$item $item_state $mesg"
 
 done
 
-echo $item_state
-if [[ $item_state == 'Warning' ]]
-	then
-		exitstatus=1
-	else
-		exitstatus=0
+for $item in ${FILESET[@]:2}
+do
+	if [[ $item_state == 'Warning' ]]
+		then
+			exitstatus=1
+		else
+			exitstatus=0
 	fi
-echo $exitstatus
-
 done
-
+echo $exitstatus
 
 exit $exitstatus
 
