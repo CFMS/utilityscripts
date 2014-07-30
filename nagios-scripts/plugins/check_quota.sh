@@ -107,18 +107,19 @@ done
 
 if [[ $ITEM_STATE = *warning* ]]
 then
-	$exitstatus=$STATE_WARNING
+	$exitstatus=1
 fi
 if [[ $ITEM_STATE = *critical* ]]
 then
-	$exitstatus=$STATE_CRITICAL
+	$exitstatus=2
 fi
 if [[ $ITEM_STATE = *ok* ]]
 then
-	$exitstatus=$STATE_OK
+	$exitstatus=3
 fi
 done
 
+echo $exitstatus
 exit $exitstatus
 
  # vim: autoindent number ts=4
