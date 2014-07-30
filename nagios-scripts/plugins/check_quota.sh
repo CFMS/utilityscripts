@@ -116,17 +116,6 @@ if [[ $item_state -ne 'Warning' && 'critical' ]]
 
 echo -e "$item $item_state $mesg"
 
-
-
-done
-
- 
-
-if [[ $item_state == 'Warning' ]] 
-	then
-		
-
-
 done
 echo $exitstatus
 
