@@ -89,34 +89,34 @@ if [ -z $HARD_VAL ] ; then percentage="0" ; else percentage=$(($usage * 100 /$ha
 if [[ $percentage -gt 90 && $percentage -lt 95 ]]
         then
             mesg="WARNING - $usage GB used, $hard GB total, $percentage %"
-            exitstatus1=$STATE_WARNING
+            ITEM_STATE=warning
     	fi
 if [[ $percentage -gt 98 ]]
         then
          	mesg="CRITICAL - $usage GB used, $hard GB total, $percentage %"
-    	 	exitstatus1=$STATE_CRITICAL
-        fi
+        	ITEM_STATE=critical
+	fi
 if [[ $percentage -lt 90 ]]
        then
           	mesg="OK - $usage GB used, $hard GB total, $percentage %"
-    		exitstatus1=$STATE_OK
-       fi
+       		ITEM_STATE=ok
+	fi
 
 echo -e "$item $mesg"
 done
 
-if $exitstatus1=$STATE_WARNING
-	then
-		$exitstatus=$STATE_WARNING
-	fi
-if $exitstatus1=$STATE_CRITICAL
-	then
-		$exitstatus=$STATE_CRITICAL
-	fi
-if $exitstatus1=$STATE_OK
-	then	
-		$exitstatus=$STATE_OK
-	fi
+if [[ $ITEM_STATE = *warning* ]]
+then
+	$exitstatus=$STATE_WARNING
+fi
+if [[ $ITEM_STATE = *critical* ]]
+then
+	$exitstatus=$STATE_CRITICAL
+fi
+if [[ $ITEM_STATE = *ok* ]]
+then
+	$exitstatus=$STATE_OK
+fi
 done
 
 exit $exitstatus
