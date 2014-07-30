@@ -25,7 +25,6 @@ STATE_OK=0
 STATE_WARNING=1
 STATE_CRITICAL=2
 STATE_UNKNOWN=3
-STATE_DEPENDENT=4
 
 print_version() {
     echo "$PROGNAME $VERSION $AUTHOR"
@@ -90,21 +89,36 @@ if [ -z $HARD_VAL ] ; then percentage="0" ; else percentage=$(($usage * 100 /$ha
 if [[ $percentage -gt 90 && $percentage -lt 95 ]]
         then
             mesg="WARNING - $usage GB used, $hard GB total, $percentage %"
-            exitstatus=$STATE_WARNING
+            exitstatus1=$STATE_WARNING
     	fi
 if [[ $percentage -gt 98 ]]
         then
          	mesg="CRITICAL - $usage GB used, $hard GB total, $percentage %"
-    	 	exitstatus=$STATE_CRITICAL
+    	 	exitstatus1=$STATE_CRITICAL
         fi
 if [[ $percentage -lt 90 ]]
        then
           	mesg="OK - $usage GB used, $hard GB total, $percentage %"
-    		exitstatus=$STATE_OK
+    		exitstatus1=$STATE_OK
        fi
 
 echo -e "$item $mesg"
 done
+
+if $exitstatus1=$STATE_WARNING
+	then
+		$exitstatus=$STATE_WARNING
+	fi
+if $exitstatus1=$STATE_CRITICAL
+	then
+		$exitstatus=$STATE_CRITICAL
+	fi
+if $exitstatus1=$STATE_OK
+	then	
+		$exitstatus=$STATE_OK
+	fi
+done
+
 exit $exitstatus
 
  # vim: autoindent number ts=4
