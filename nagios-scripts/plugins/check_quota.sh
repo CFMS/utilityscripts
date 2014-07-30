@@ -104,10 +104,6 @@ if [[ $percentage -lt 90 ]]
 
 echo -e "$item $item_state $mesg"
 
-done
-
-for $item in ${FILESET[@]:2}
-do
 	if [[ $item_state == 'Warning' ]]
 		then
 			exitstatus=1
