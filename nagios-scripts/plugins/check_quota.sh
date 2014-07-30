@@ -99,27 +99,24 @@ if [[ $percentage -gt 98 ]]
 if [[ $percentage -lt 90 ]]
        then
           	mesg="OK - $usage GB used, $hard GB total, $percentage %"
-       		ITEM_STATE=ok
+		ITEM_STATE=ok
 	fi
 
 echo -e "$item $mesg"
 done
-
-if [[ $ITEM_STATE = *warning* ]]
-then
-	$exitstatus=1
-fi
-if [[ $ITEM_STATE = *critical* ]]
-then
-	$exitstatus=2
-fi
-if [[ $ITEM_STATE = *ok* ]]
-then
-	$exitstatus=3
-fi
+if [[ $ITEM_STATE == 'ok' ]]
+	then
+		$exitstatus=0
+	else
+		if [[ $ITEM_STATE == 'warning' ]]
+			then
+				$exitstatus=1
+		else
+			$exitstatus=2
+		fi
+	fi
 done
 
-echo $exitstatus
 exit $exitstatus
 
  # vim: autoindent number ts=4
