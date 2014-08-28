@@ -1,0 +1,33 @@
+//Version 0.1
+
+<html>
+      <head>
+
+<script type="text/javascript">
+var pages = [
+"http://172.20.5.45/nagios/cgi-bin/status.cgi?hostgroup=cfms-internet-core&style=detail",
+"http://172.20.5.45/nagios/cgi-bin/status.cgi?hostgroup=cfms-core&style=detail",
+"/ganglia/mobile_helper.php?show_cluster_metrics=1&c=CFMS%20Cluster&r=hour&cs=&ce=",
+"/nagios/cgi-bin/status.cgi?hostgroup=switches&style=grid",
+"/nagios/cgi-bin/status.cgi?hostgroup=storage&style=grid",
+"/nagios/cgi-bin/status.cgi?hostgroup=interactive&style=grid",
+"/nagios/cgi-bin/status.cgi?hostgroup=gpu&style=grid",
+"http://172.20.5.45/nagios/cgi-bin/status.cgi?hostgroup=windows-server&style=detail"
+];
+var currentIndex = -1;
+function startCycle() {
+    var iframe = document.getElementById("iframe1");
+    currentIndex = (++currentIndex) % pages.length;
+    iframe.onload = function() {
+        window.setTimeout(startCycle, 3000); //Currently set to change every 50 seconds
+    }
+    iframe.src = pages[currentIndex];
+}
+window.onload = startCycle;</script>
+      </head>
+      <body>
+            <iframe  id="iframe1"  frameborder="0"  vspace="0"  hspace="0"  marginwidth="0"  marginheight="0"
+                  width="900"  scrolling="no"  height="900">
+            </iframe>
+      </body>
+</html>

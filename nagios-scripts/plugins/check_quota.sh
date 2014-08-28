@@ -86,36 +86,36 @@ if [ -z $HARD_VAL ] ; then hard="0" ; else hard=`expr $HARD_VAL / 1024 / 1024`; 
 
 if [ -z $HARD_VAL ] ; then percentage="0" ; else percentage=$(($usage * 100 /$hard));  fi
 
-if [[ $percentage -gt 90 && $percentage -lt 95 ]]
+if [[ $percentage -gt 90 && $percentage -lt 98 ]]
         then
             mesg="WARNING - $usage GB used, $hard GB total, $percentage %"
             ITEM_STATE=warning
-    	fi
-if [[ $percentage -gt 98 ]]
+elif [[ $percentage -gt 98 ]]
         then
          	mesg="CRITICAL - $usage GB used, $hard GB total, $percentage %"
         	ITEM_STATE=critical
-	fi
-if [[ $percentage -lt 90 ]]
+elif [[ $percentage -lt 90 ]]
        then
           	mesg="OK - $usage GB used, $hard GB total, $percentage %"
 		ITEM_STATE=ok
-	fi
+
+else 
+		mesg="Error, one of these is not being met. Please check"
+fi
 
 echo -e "$item $mesg"
 done
-if [[ $ITEM_STATE == 'ok' ]]
+if [[ $ITEM_STATE == 'critical' ]]
 	then
-		$exitstatus=0
-	else
-		if [[ $ITEM_STATE == 'warning' ]]
-			then
-				$exitstatus=1
-		else
-			$exitstatus=2
-		fi
-	fi
-done
+		exitstatus=2
+elif
+	[[ $ITEM_STATE == 'warning' ]]
+	then
+		exitstatus=1
+else
+		exitstatus=0
+
+fi
 
 exit $exitstatus
 

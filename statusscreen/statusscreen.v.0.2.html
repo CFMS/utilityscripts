@@ -1,0 +1,20 @@
+<?php
+$datapath = "/opt/statusscreen/data";
+$temperature = file_get_contents( $datapath . "/data-weather-temp" );
+$CFMSuk = file_get_contents( $datapath . "/data-twitter" );
+$sb4 = file_get_contents( $datapath . "/data-ops-sb4" );
+$projnum = file_get_contents( $datapath . "/data-projects-projnum" );
+ //(etc)
+?>
+<html><head><title></title>
+<meta http-equiv="refresh" content="10" />
+</head>
+<table>
+<tr>
+  <td><?=$temperature?></td>
+  <td><?=$CFMSuk?></td>
+  <td><?=$sb4?></td>
+  <td><?=$projnum?></td>
+</tr>
+</table>
+</body></html>
