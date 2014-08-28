@@ -1,7 +1,7 @@
 #!/usr/bin/php
 <?php
 $datapath = "/opt/statusscreen/data/";
-$weather_feed = file_get_contents("api.openweathermap.org/data/2.5/weather?q=Bristol,uk&mode=xml");
+$weather_feed = file_get_contents("http://api.openweathermap.org/data/2.5/weather?q=Bristol,uk&mode=xml");
 $weather = simplexml_load_string($weather_feed);
 if(!$weather) die('weather failed');
 
