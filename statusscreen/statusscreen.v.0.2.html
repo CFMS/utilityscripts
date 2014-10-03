@@ -1,20 +1,26 @@
-<?php
-$datapath = "/opt/statusscreen/data";
-$temperature = file_get_contents( $datapath . "/data-weather-temp" );
-$CFMSuk = file_get_contents( $datapath . "/data-twitter" );
-$sb4 = file_get_contents( $datapath . "/data-ops-sb4" );
-$projnum = file_get_contents( $datapath . "/data-projects-projnum" );
- //(etc)
-?>
-<html><head><title></title>
-<meta http-equiv="refresh" content="10" />
-</head>
-<table>
-<tr>
-  <td><?=$temperature?></td>
-  <td><?=$CFMSuk?></td>
-  <td><?=$sb4?></td>
-  <td><?=$projnum?></td>
-</tr>
-</table>
-</body></html>
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>Status Screen V0.2</title>
+  <script src="//code.jquery.com/jquery-1.10.2.js"></script>
+ </head>
+
+<body>
+
+<div id="weather"></div>
+ 
+<script>
+(function() {
+  var weatherAPI = "http://api.openweathermap.org/data/2.5/weather?q=bristol,uk";
+  $.getJSON( weatherAPI, {
+    format: "json"
+  })
+    .done(function( data ) {
+ //     $.each( data.items, function( i, item ) {
+     console.log( data ["main"] );
+     })
+	})();
+</script>
+</body>
+</html>

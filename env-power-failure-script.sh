@@ -22,33 +22,52 @@ BO_COMPUTE_EMAIL1=mail -s "HP and MO Powered Off" $ADMIN_EMAIL < /root/power-fai
 #GPFS Shutdown Imminent
 GPFS_SHUTDOWN_EMAIL1=mail -s "GPFS going Offline" $ADMIN_EMAIL < /root/power-failure/gpfs-warn
 
-#Compute Off
+#Power Off Definitions
 POWER_OFF_COMPUTE=ssh mgt01 /opt/xcat/bin/rpower compute off
 POWER_OFF_PPN=ssh mgt01 /opt/xcat/bin/rpower ppn off
 POWER_OFF_GPU=ssh mgt01	/opt/xcat/bin/rpower gpu off
 POWER_ASLEEP_CMC1=ssh mgt01 snmpset -v 1 -c community cmc1 .1.3.6.1.4.1.107.206.1.3.1.1.1.0 i 2
 POWER_ASLEEP_CMC2=ssh mgt01 snmpset -v 1 -c community cmc2 .1.3.6.1.4.1.107.206.1.3.1.1.1.0 i 2
-QSTAT_CAPTURE=ssh login01 'module load sge62u5; qstat -u "*" > /root/outage.out'
-QSTAT_SCP=scp login01:/root/power-failure/outage.out /root/power-failure/outage-'date "+%Y%m%d"'.out
 POWER_OFF_HEAD=ssh mgt01 /opt/xcat/bin/rpower head off
 POWER_OFF_LOGIN=ssh mgt01 /opt/xcat/bin/rpower login off
 POWER_OFF_MO_COMPUTE=ssh momgt01 /opt/xcat/bin/rpower compute off
 POWER_OFF_MO_LOGIN=ssh momgt01 /opt/xcat/bin/rpower login off
 POWER_OFF_CLUSTER_STOR=ssh mgt01 /opt/xcat/bin/rpower storage off
 POWER_OFF_MO_STOR=ssh momgt01 /opt/xcat/bin/rpower storage off
+
+#Data Save
+QSTAT_CAPTURE=ssh services@login01 'qstat -u "*" > /root/outage.out'
+QSTAT_SCP=scp login01:/root/power-failure/outage.out /root/power-failure/outage-'date "+%Y%m%d"'.out
 CHECK_CLUSTER_POWER=ssh mgt01 /opt/xcat/bin/rpower all status > /root/power-check-outage.out
 CHECK_CLUSTER_POWER_STATUS=scp mgt01:/root/power-check-outage.out /root/power-failure/power-check-outage-'date "+%Y%m%d"'.out
+
+
+#VMWARE Soft Shutdown of VM's
+#Internal
 HOSTB08-VMWARE1_GUEST_SHUTDOWN=ssh 172.20.5.48 'for vm in `/usr/bin/vmware-cmd -l`; do /usr/bin/vmware-cmd "${vm}" stop trysoft; done'
 HOSTB17-VMWARE2_GUEST_SHUTDOWN=ssh 172.20.5.57 'for vm in `/usr/bin/vmware-cmd -l`; do /usr/bin/vmware-cmd "${vm}" stop trysoft; done'
 HOSTB18-VMWARE3_GUEST_SHUTDOWN=ssh 172.20.5.58 'for vm in `/usr/bin/vmware-cmd -l`; do /usr/bin/vmware-cmd "${vm}" stop trysoft; done'
 HOSTB07-VMWARE4_GUEST_SHUTDOWN=ssh 172.20.5.47 'for vm in `/usr/bin/vmware-cmd -l`; do /usr/bin/vmware-cmd "${vm}" stop trysoft; done'
+#Conga
+HOSTCONGA-VMWARE5_GUEST_SHUTDOWN=ssh 172.20.5.64 'for vm in `/usr/bin/vmware-cmd -l`; do /usr/bin/vmware-cmd "${vm}" stop trysoft; done'
+HOSTCONGA-VMWARE6_GUEST_SHUTDOWN=ssh 172.20.5.65 'for vm in `/usr/bin/vmware-cmd -l`; do /usr/bin/vmware-cmd "${vm}" stop trysoft; done'
+HOSTCONGA-VMWARE7_GUEST_SHUTDOWN=ssh 172.20.5.85 'for vm in `/usr/bin/vmware-cmd -l`; do /usr/bin/vmware-cmd "${vm}" stop trysoft; done'
+#RR/Maximo
+HOSTRREXT-VMWARE8_GUEST_SHUTDOWN=ssh 172.20.5.66 'for vm in `/usr/bin/vmware-cmd -l`; do /usr/bin/vmware-cmd "${vm}" stop trysoft; done'
+HOSTMAXIMO-VMWARE9_GUEST_SHUTDOWN=ssh 172.28.2.51 'for vm in `/usr/bin/vmware-cmd -l`; do /usr/bin/vmware-cmd "${vm}" stop trysoft; done'
+HOSTMAXIMO-VMWARE10_GUEST_SHUTDOWN=ssh 172.28.2.53 'for vm in `/usr/bin/vmware-cmd -l`; do /usr/bin/vmware-cmd "${vm}" stop trysoft; done'
 
-
-
-HOSTB08_SHUTDOWN=ssh 172.20.5.48 shutdown now
-HOSTB17_SHUTDOWN=ssh 172.20.5.57 shutdown now
-HOSTB18_SHUTDOWN=ssh 172.20.5.58 shutdown now
-
+#VMWARE HOSTS SHUTDOWN
+HOSTB08-VMWARE1_SHUTDOWN=ssh 172.20.5.48 shutdown now
+HOSTB17-VMWARE2_SHUTDOWN=ssh 172.20.5.57 shutdown now
+HOSTB18-VMWARE3_SHUTDOWN=ssh 172.20.5.58 shutdown now
+HOSTB07-VMWARE4_SHUTDOWN=ssh 172.20.5.47 shutdown now
+HOSTCONGA-VMWARE5_SHUTDOWN=ssh 172.20.5.64 shutdown now
+HOSTCONGA-VMWARE6_SHUTDOWN=ssh 172.20.5.65 shutdown now
+HOSTCONGA-VMWARE7_SHUTDOWN=ssh 172.20.5.85 shutdown now
+HOSTRREXT-VMWARE8_SHUTDOWN=ssh 172.20.5.66 shutdown now
+HOSTMAXIMO-VMWARE9_SHUTDOWN=ssh 172.28.2.51 shutdown now
+HOSTMAXIMO-VMWARE10_SHUTDOWN=ssh 172.28.2.53 shutdown now
 
 #Compute On
 POWER_ON_GPU=ssh mgt01 /opt/xcat/bin/rpower gpu on
