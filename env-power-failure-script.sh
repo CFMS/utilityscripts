@@ -5,22 +5,22 @@
 ADMIN_EMAIL=support@cfms.org.uk
 
 #Notice of failure
-FAIL1=mail -s "Power Failure Notice" $ADMIN_EMAIL < /root/power-failure/admin-notice
+FAIL1='mail -s "Power Failure Notice" $ADMIN_EMAIL < /root/power-failure/admin-notice'
 
 #power failure > 3 minutes Starting Power off of Compute
-FAIL2=mail -s "Power Failure Notice - 3 Minutes" $ADMIN_EMAIL < /root/power-failure/compute-power-off
+FAIL2='mail -s "Power Failure Notice - 3 Minutes" $ADMIN_EMAIL < /root/power-failure/compute-power-off'
 
 #QSTAT Email to Admins
-QSTAT_EMAIL=mail -s "QSTAT Report - Outage Alert" $ADMIN_EMAIL < /root/power-failure/outage-'date "+%Y%m%d"'.out
+QSTAT_EMAIL='mail -s "QSTAT Report - Outage Alert" $ADMIN_EMAIL < /root/power-failure/outage-'date "+%Y%m%d"'.out'
 
 #Powered-OFF-Compute email
-PO_COMPUTE_EMAIL=mail -s "Cluster Powered Off" $ADMIN_EMAIL < /root/power-failure/Cluster-off
+PO_COMPUTE_EMAIL='mail -s "Cluster Powered Off" $ADMIN_EMAIL < /root/power-failure/cluster-off'
 
 #Powered off MO and HP gear email
-BO_COMPUTE_EMAIL1=mail -s "HP and MO Powered Off" $ADMIN_EMAIL < /root/power-failure/mo-off
+#BO_COMPUTE_EMAIL1=mail -s "HP and MO Powered Off" $ADMIN_EMAIL < /root/power-failure/mo-off
 
 #GPFS Shutdown Imminent
-GPFS_SHUTDOWN_EMAIL1=mail -s "GPFS going Offline" $ADMIN_EMAIL < /root/power-failure/gpfs-warn
+GPFS_SHUTDOWN_EMAIL1='mail -s "GPFS going Offline" $ADMIN_EMAIL < /root/power-failure/gpfs-warn'
 
 #Power Off Definitions
 POWER_OFF_COMPUTE=ssh mgt01 /opt/xcat/bin/rpower compute off
@@ -74,10 +74,10 @@ POWER_ON_GPU=ssh mgt01 /opt/xcat/bin/rpower gpu on
 POWER_ON_PPN=ssh mgt01 /opt/xcat/bin/rpower ppn on
 POWER_ON_HEAD=ssh mgt01 /opt/xcat/bin/rpower head on
 POWER_ON_LOGIN=ssh mgt01 /opt/xcat/bin/rpower login on
-NODE_LS=ssh mgt01 nodels > /root/power-failure/nodels.out
-NODE_LIST_SCP=scp mgt01:/root/power-failure/nodels-'date "+%Y%m%d"'.out
 POWER_AWAKE_CMC1=ssh mgt01 snmpset -v 1 -c community cmc1 .1.3.6.1.4.1.107.206.1.3.1.1.1.0 i 1
 POWER_AWAKE_CMC2=ssh mgt01 snmpset -v 1 -c community cmc2 .1.3.6.1.4.1.107.206.1.3.1.1.1.0 i 1
+NODE_LS=ssh mgt01 nodels compute > /root/nodels-'date "+%Y%m%d"'.out
+
 
 ##Function Definitions
 function POWER_OFF_NODES
@@ -93,7 +93,7 @@ function POWER_OFF_NODES
 	sleep 5s
 	$QSTAT_SCP
 	sleep 5s
-	$QSTAT_EMAIL
+	eval $QSTAT_EMAIL
 	$POWER_OFF_HEAD
 	$POWER_OFF_LOGIN
 }
@@ -102,9 +102,9 @@ function CONTINUE_SHUTDOWN
 	SHUTDOWN_HP_GEAR
 	sleep 30s
 	SHUTDOWN_MO
-	$BO_COMPUTE_EMAIL1
+#	$BO_COMPUTE_EMAIL1
 	sleep 10m
-	$GPFS_SHUTDOWN_EMAIL1
+	eval $GPFS_SHUTDOWN_EMAIL1
 	SHUTDOWN_GPFS_MO
 	SHUTDOWN_GPFS_CLUSTER
 	sleep 3m
@@ -124,11 +124,12 @@ function SHUTDOWN_HP_GEAR
 	rpower dl007 off
 	rpower dl008 off
 	rpower dl009 off
-	ssh dl010 /etc/init.d/ceph -a stop
-	ssh dl011 /etc/init.d/ceph -a stop
-	sleep 10s
+#	ssh dl010 /etc/init.d/ceph -a stop
+#	ssh dl011 /etc/init.d/ceph -a stop
+#	sleep 10s
 	rpower dl010 off
 	rpower dl011 off
+	rpower dl012 off
 }
 function SHUTDOWN_MO
 {
@@ -159,12 +160,30 @@ function VMWARE_ESTATE
 	$HOSTB08-VMWARE1_GUEST_SHUTDOWN
 	$HOSTB17-VMWARE2_GUEST_SHUTDOWN
 	$HOSTB18-VMWARE3_GUEST_SHUTDOWN
-	
+	$HOSTB07-VMWARE4_GUEST_SHUTDOWN
+	$HOSTCONGA-VMWARE5_GUEST_SHUTDOWN
+	$HOSTCONGA-VMWARE6_GUEST_SHUTDOWN
+	$HOSTCONGA-VMWARE7_GUEST_SHUTDOWN
+	$HOSTRREXT-VMWARE8_GUEST_SHUTDOWN
+	$HOSTMAXIMO-VMWARE9_GUEST_SHUTDOWN
+	$HOSTMAXIMO-VMWARE10_GUEST_SHUTDOWN
+	sleep 1m
+	$HOSTB08-VMWARE1_SHUTDOWN
+	$HOSTB17-VMWARE2_SHUTDOWN
+	$HOSTB18-VMWARE3_SHUTDOWN
+	$HOSTB07-VMWARE4_SHUTDOWN
+	$HOSTCONGA-VMWARE5_SHUTDOWN
+	$HOSTCONGA-VMWARE6_SHUTDOWN
+	$HOSTCONGA-VMWARE7_SHUTDOWN
+	$HOSTRREXT-VMWARE8_SHUTDOWN
+	$HOSTMAXIMO-VMWARE9_SHUTDOWN
+	$HOSTMAXIMO-VMWARE10_SHUTDOWN
 
+}
 function POWER_ON
 {
 	POWER_ON_I_NODES
-	POWER_ON_COMPUTE
+	POWER_ON_NODES
 }
 function POWER_ON_I_NODES
 {
@@ -173,23 +192,35 @@ function POWER_ON_I_NODES
 	$POWER_ON_HEAD
 	$POWER_ON_LOGIN
 }
+function POWER_ON_NODES
+{
+	$POWER_AWAKE_CMC1
+	sleep 30s
+	$POWER_AWAKE_CMC2
+	sleep 30s
+	while read line
+		do 
+			ssh mgt01 /opt/xcat/bin/rpower $line on 
+			sleep 30s
+	done <$NODE_LS
+}
 
 ##Actual Script
 
 #Email out to Admins Power Failure event has occurred
-$FAIL1
+eval $FAIL1
 
 sleep 2m
 
 #2nd Email to Admins - cluster Power Off will occur in 1 minute
-$FAIL2
+eval $FAIL2
 
 sleep 1m
 
 #Power Off the Compute nodes and Interactive nodes to run only mgt01
 POWER_OFF_NODES
 #Email Re Progress of Shutdown to admins
-$PO_COMPUTE_EMAIL
+eval $PO_COMPUTE_EMAIL
 
 CONTINUE_SHUTDOWN
 
