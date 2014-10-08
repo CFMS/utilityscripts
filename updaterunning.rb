@@ -8,6 +8,7 @@ def GetCores(cluster = nil, starttime = nil, endtime = nil)
 
   
 	if endtime == nil
+    total_cores = `./cores.sh`
 
 
 
@@ -17,16 +18,16 @@ def GetCores(cluster = nil, starttime = nil, endtime = nil)
   #  url_raw = 'http://hcc-gratia.unl.edu:8100/gratia/csv/status_vo?facility=%{cluster}&starttime=%{starttime}&endtime=%{endtime}' % { :cluster => cluster, :starttime => starttime_str, :endtime => endtime_str }
   #end
 
-  uri = URI(url_raw)
-  response = Net::HTTP.get_response(uri)
+  #uri = URI(url_raw)
+  #response = Net::HTTP.get_response(uri)
 
   #File.open("/tmp/csv.file", 'w') { |f| f.write(url) }
   #File.open("/tmp/csv.file", 'a') { |f| f.write(response.body) }
 
-  total_cores = 0.0
-  CSV.parse(response.body, { :headers => :first_row} ) do |row|
-     total_cores += row[2].to_f
-  end
+  #total_cores = 0.0
+  #CSV.parse(response.body, { :headers => :first_row} ) do |row|
+  #   total_cores += row[2].to_f
+  #end
 
   return total_cores
 
@@ -52,8 +53,8 @@ end
 
 
 
-//sge-cores-compa= qstat -u "*" -s r -q all.q,rr.batch.q,fluent.q,rr.interactive.q | awk '$4 !="hyao" {print $9}' + qstat -u "*" -s r -q all.q,rr.batch.q,fluent.q,rr.interactive.q | awk '$4 =="hyao" {print $9*2}'
-//sge-cores-compb= qstat -u "*" -s r -q highmem.q | awk '{print $9}'
-//sge-cores-compc= qstat -u "*" -s r -q highmem.q | awk '{print $9}'
-
-SLURMCORE=($(ssh login02 squeue -S -D --format=%C))
+#sge-cores-compa= qstat -u "*" -s r -q all.q,rr.batch.q,fluent.q,rr.interactive.q | awk '$4 !="hyao" {print $9}' + qstat -u "*" -s r -q all.q,rr.batch.q,fluent.q,rr.interactive.q | awk '$4 =="hyao" {print $9*2}'
+#sge-cores-compb= qstat -u "*" -s r -q highmem.q | awk '{print $9}'
+#sge-cores-compc= qstat -u "*" -s r -q highmem.q | awk '{print $9}'
+#
+#SLURMCORE=($(ssh login02 squeue -S -D --format=%C))
