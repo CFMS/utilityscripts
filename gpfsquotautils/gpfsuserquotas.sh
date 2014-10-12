@@ -46,19 +46,26 @@ for i in cat $TMPDIR/getent.out
 		userdeets[3]=`echo $i | awk -F: '{print $6}'`
 		if [ ${userdeets[1]} = 701 ] # group is RR
 			then 
+				FILESETDIR=`echo ${userdeets[3]} | awk -F/ '{print "/"$2"/" $3}'`
+				echo "cat $FILESET/gpfsquota.txt > ${userdeets[3]}/gpfsquota.txt"
 		elsif [ ${userdeets[1]} = 702 ] # groups is Airbus
 			then
+				FILESETDIR=`echo ${userdeets[3]} | awk -F/ '{print "/"$2"/" $3}'`
+				echo "cat $FILESET/gpfsquota.txt > ${userdeets[3]}/gpfsquota.txt"
 		elsif [ ${userdeets[0]} = de1 ] # user is de1
 			then
+				FILESETDIR=/gpfs/thirdparty/de/de1
+		else
+			echo "testing123"
 
 # work through the filesets to find out who belongs in it
-IFS=$'\n'
-for i in $(cat $TMPDIR/filesets.out)
-	do
-		fileset[0]=`echo $i | awk '{print $1}'`
-		fileset[1]=`echo $i | awk '{print $3}'`
-		echo ${fileset[1]}
-		FILESETHOME={fileset[1]}
-		cat $TMPDIR/getent.out | awk -F: '$6==$FILESETHOME{print $1}'
-	done
-unset IFS
+#IFS=$'\n'
+#for i in $(cat $TMPDIR/filesets.out)
+#	do
+#		fileset[0]=`echo $i | awk '{print $1}'`
+#		fileset[1]=`echo $i | awk '{print $3}'`
+#		echo ${fileset[1]}
+#		FILESETHOME={fileset[1]}
+#		cat $TMPDIR/getent.out | awk -F: '$6==$FILESETHOME{print $1}'
+#	done
+#unset IFS
