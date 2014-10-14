@@ -34,7 +34,7 @@ mmrepquota -u $GPFSFS > $TMPDIR/mmlsfilesetu.out
 
 # work through the list of users and create a report for each
 IFS=$'\n'
-for i in cat $TMPDIR/getent.out
+for i in $(cat $TMPDIR/getent.out)
 	do
 		# first is username
 		userdeets[0]=`echo $i | awk -F: '{print $1}'`
