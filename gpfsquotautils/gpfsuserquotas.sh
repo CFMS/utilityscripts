@@ -37,9 +37,9 @@ IFS=$'\n'
 for i in $(cat $TMPDIR/filesets.out)
 	do 
 		# define the fileset name
-		FILESETNAME=`echo $i | awk -F: '{print $1}'`
+		FILESETNAME=`echo $i | awk '{print $1}'`
 		# define the fileset root
-		FILESETROOT=`echo $i | awk -F: '{print $3}'`
+		FILESETROOT=`echo $i | awk '{print $3}'`
 		# find the fileset and write the quota to a file in the root
 		echo "cat $TMPDIR/mmlsfilesetj.out | awk -v fsname=$FILESETNAME '$1==fsname{printf "%-15s %s\n",  $3/1048576 "GB",$3/$5*100"% Used"}' > $FILESETROOT/gpfsquotause.txt"
 	done
