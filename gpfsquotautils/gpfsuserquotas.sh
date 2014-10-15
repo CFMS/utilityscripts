@@ -33,10 +33,19 @@ mmrepquota -j $GPFSFS > $TMPDIR/mmlsfilesetj.out
 mmrepquota -u $GPFSFS > $TMPDIR/mmlsfilesetu.out
 
 # write the current fileset quota usage to a file at the root of the fileset
-for i in $(cat $TMPDIR/mmlsfilesetj.out)
+IFS=$'\n'
+for i in $(cat $TMPDIR/filesets.out)
 	do 
-		fileset[0]=`echo $i | awk -F: '{print $1}'`
-
+		# define the fileset name
+		FILESETNAME=`echo $i | awk -F: '{print $1}'`
+		# define the fileset root
+		FILESETROOT=`echo $i | awk -F: '{print $3}'`
+		# find the fileset and write the quota to a file in the root
+		echo "cat $TMPDIR/mmlsfilesetj.out | awk -v fsname=$FILESETNAME '$1==fsname{printf "%-15s %s\n",  $3/1048576 "GB",$3/$5*100"% Used"}' > $FILESETROOT/gpfsquotause.txt"
+	done
+		
+		
+unset IFS
 # work through the list of users and create a report for each
 IFS=$'\n'
 for i in $(cat $TMPDIR/getent.out)
@@ -64,6 +73,7 @@ for i in $(cat $TMPDIR/getent.out)
 			echo "testing123"
 		fi
 	done
+unset IFS
 
 # work through the filesets to find out who belongs in it
 #IFS=$'\n'
