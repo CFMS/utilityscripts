@@ -32,6 +32,11 @@ mmrepquota -j $GPFSFS > $TMPDIR/mmlsfilesetj.out
 
 mmrepquota -u $GPFSFS > $TMPDIR/mmlsfilesetu.out
 
+# write the current fileset quota usage to a file at the root of the fileset
+for i in $(cat $TMPDIR/mmlsfilesetj.out)
+	do 
+		fileset[0]=`echo $i | awk -F: '{print $1}'`
+
 # work through the list of users and create a report for each
 IFS=$'\n'
 for i in $(cat $TMPDIR/getent.out)
@@ -48,15 +53,17 @@ for i in $(cat $TMPDIR/getent.out)
 			then 
 				FILESETDIR=`echo ${userdeets[3]} | awk -F/ '{print "/"$2"/" $3}'`
 				echo "cat $FILESET/gpfsquota.txt > ${userdeets[3]}/gpfsquota.txt"
-		elsif [ ${userdeets[1]} = 702 ] # groups is Airbus
+		elif [ ${userdeets[1]} = 702 ] # groups is Airbus
 			then
 				FILESETDIR=`echo ${userdeets[3]} | awk -F/ '{print "/"$2"/" $3}'`
 				echo "cat $FILESET/gpfsquota.txt > ${userdeets[3]}/gpfsquota.txt"
-		elsif [ ${userdeets[0]} = de1 ] # user is de1
+		elif [ ${userdeets[0]} = de1 ] # user is de1
 			then
 				FILESETDIR=/gpfs/thirdparty/de/de1
 		else
 			echo "testing123"
+		fi
+	done
 
 # work through the filesets to find out who belongs in it
 #IFS=$'\n'
