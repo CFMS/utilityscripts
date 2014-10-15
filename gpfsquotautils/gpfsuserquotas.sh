@@ -2,9 +2,9 @@
 
 # This script will parse some GPFS reporting information to get GPFS quotas for all users
 
-TMPDIR=/tmp/gpfsquotas
-GPFSFS=prgpfs
-SCHEDNOD=head01
+#TMPDIR=/tmp/gpfsquotas
+#GPFSFS=prgpfs
+#SCHEDNOD=head01
 
 export TMPDIR=/tmp/gpfsquotas
 GPFSFS=mogpfs
@@ -12,7 +12,7 @@ SCHEDNOD=mologin01
 
 if [ ! -e $TMPDIR ]
 	then mkdir $TMPDIR
-		
+
 fi
 
 # get a list of all users from SSSD
@@ -33,18 +33,20 @@ mmrepquota -j $GPFSFS > $TMPDIR/mmlsfilesetj.out
 mmrepquota -u $GPFSFS > $TMPDIR/mmlsfilesetu.out
 
 # write the current fileset quota usage to a file at the root of the fileset
-IFS=$'\n'
-for i in $(cat $TMPDIR/filesets.out)
-	do 
+export IFS=$'\n'
+for i in $(cat $TMPDIR/filesets.out | tail -n +3)
+	do
 		# define the fileset name
 		FILESETNAME=`echo $i | awk '{print $1}'`
+		echo $FILESETNAME
 		# define the fileset root
 		FILESETROOT=`echo $i | awk '{print $3}'`
+		echo $FILESETROOT
 		# find the fileset and write the quota to a file in the root
-		echo "cat $TMPDIR/mmlsfilesetj.out | awk -v fsname=$FILESETNAME '$1==fsname{printf "%-15s %s\n",  $3/1048576 "GB",$3/$5*100"% Used"}' > $FILESETROOT/gpfsquotause.txt"
+		cat $TMPDIR/mmlsfilesetj.out | awk -v fsname=$FILESETNAME '$1==fsname{printf "%-15s %s\n",  $3/1048576 "GB",$3/$5*100"% Used"}' > $FILESETROOT/gpfsquotause.txt
 	done
-		
-		
+
+
 unset IFS
 # work through the list of users and create a report for each
 IFS=$'\n'
@@ -59,7 +61,7 @@ for i in $(cat $TMPDIR/getent.out)
 		# fourth is their homedir
 		userdeets[3]=`echo $i | awk -F: '{print $6}'`
 		if [ ${userdeets[1]} = 701 ] # group is RR
-			then 
+			then
 				FILESETDIR=`echo ${userdeets[3]} | awk -F/ '{print "/"$2"/" $3}'`
 				echo "cat $FILESET/gpfsquota.txt > ${userdeets[3]}/gpfsquota.txt"
 		elif [ ${userdeets[1]} = 702 ] # groups is Airbus
