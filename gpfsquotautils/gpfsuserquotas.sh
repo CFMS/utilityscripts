@@ -43,7 +43,7 @@ for i in $(cat $TMPDIR/filesets.out | tail -n +3)
 		FILESETROOT=`echo $i | awk '{print $3}'`
 		echo $FILESETROOT
 		# find the fileset and write the quota to a file in the root
-		cat $TMPDIR/mmlsfilesetj.out | awk -v fsname=$FILESETNAME '$1==fsname{printf "%-15s %s\n",  $3/1048576 "GB",$3/$5*100"% Used"}' > $FILESETROOT/gpfsquotause.txt
+		cat $TMPDIR/mmlsfilesetj.out | awk -v fsname=$FILESETNAME '$1==fsname{printf "%-5.2f %5-s %.2f  %s\n",  $3/1048576,"GB",$3/$5*100,"% Used"}' > $FILESETROOT/filesetquotause.txt
 	done
 
 
@@ -60,19 +60,25 @@ for i in $(cat $TMPDIR/getent.out)
 		userdeets[2]=`echo $i | awk -F: '{print $5}'`
 		# fourth is their homedir
 		userdeets[3]=`echo $i | awk -F: '{print $6}'`
+#		cat $TMPDIR/mmlsfilesetu.out | awk -v username=${userdeets[0]} '$1==username{printf "%-5.2f %5-s\n",  $3/1048576,"GB"}' > ${userdeets[3]}/userquotause.txt
 		if [ ${userdeets[1]} = 701 ] # group is RR
 			then
 				FILESETDIR=`echo ${userdeets[3]} | awk -F/ '{print "/"$2"/" $3}'`
-				echo "cat $FILESET/gpfsquota.txt > ${userdeets[3]}/gpfsquota.txt"
+				cat $FILESETDIR/filesetquotause.txt > ${userdeets[3]}/groupquota.txt
 		elif [ ${userdeets[1]} = 702 ] # groups is Airbus
 			then
 				FILESETDIR=`echo ${userdeets[3]} | awk -F/ '{print "/"$2"/" $3}'`
-				echo "cat $FILESET/gpfsquota.txt > ${userdeets[3]}/gpfsquota.txt"
+				cat $FILESETDIR/filesetquotause.txt > ${userdeets[3]}/groupquota.txt
 		elif [ ${userdeets[0]} = de1 ] # user is de1
 			then
 				FILESETDIR=/gpfs/thirdparty/de/de1
+		elif [ ${userdeets[1]} = 698 ] # groups is asrc
+			then
+				FILESETDIR=`echo ${userdeets[3]} | awk -F/ '{print "/"$2"/" $3}'`
+				cat $FILESETDIR/filesetquotause.txt > ${userdeets[3]}/groupquota.txt
 		else
-			echo "testing123"
+				FILESETDIR=`echo ${userdeets[3]} | awk -F/ '{print "/"$2"/" $3"/"$4}'`
+				cat $FILESETDIR/filesetquotause.txt > ${userdeets[3]}/groupquota.txt
 		fi
 	done
 unset IFS
