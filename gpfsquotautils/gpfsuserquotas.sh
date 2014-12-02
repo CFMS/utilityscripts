@@ -47,7 +47,7 @@ for i in $(cat $TMPDIR/filesets.out | tail -n +3)
 		FILESETROOT=`echo $i | awk '{print $3}'`
 		echo $FILESETROOT
 		# find the fileset and write the quota to a file in the root
-		cat $TMPDIR/mmlsfilesetj.out | awk -v fsname=$FILESETNAME '$1==fsname{printf "%-5.2f %5-s %.2f  %s\n",  $3/1048576,"GB",$3/$5*100,"% Used"}' > $FILESETROOT/filesetquotause.txt
+		cat $TMPDIR/mmlsfilesetj.out | awk -v fsname=$FILESETNAME '$1==fsname{printf "%s %-5.2f %5-s %.2f  %s %.2f %s\n",  "GPFS storage used:",$3/1048576,"GB (",$3/$5*100,"% )    -   ",($5-$3)/1048576,"GB remaining"}' > $FILESETROOT/filesetquotause.txt
 	done
 
 
