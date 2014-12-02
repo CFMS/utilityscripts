@@ -82,15 +82,3 @@ for i in $(cat $TMPDIR/getent.out)
 		fi
 	done
 unset IFS
-
-# work through the filesets to find out who belongs in it
-#IFS=$'\n'
-#for i in $(cat $TMPDIR/filesets.out)
-#	do
-#		fileset[0]=`echo $i | awk '{print $1}'`
-#		fileset[1]=`echo $i | awk '{print $3}'`
-#		echo ${fileset[1]}
-#		FILESETHOME={fileset[1]}
-#		cat $TMPDIR/getent.out | awk -F: '$6==$FILESETHOME{print $1}'
-#	done
-#unset IFS
