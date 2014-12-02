@@ -73,6 +73,7 @@ for i in $(cat $TMPDIR/getent.out)
 		elif [ ${userdeets[0]} = de1 ] # user is de1
 			then
 				FILESETDIR=/gpfs/thirdparty/de/de1
+				cat $TMPDIR/mmlsfilesetu.out | awk -v username=de1 '$1==username{printf "%-5.2f %5-s\n",  $3/1048576,"GB"}' > ${userdeets[3]}/groupquota.txt
 		elif [ ${userdeets[1]} = 698 ] # groups is asrc
 			then
 				FILESETDIR=`echo ${userdeets[3]} | awk -F/ '{print "/"$2"/" $3}'`
