@@ -60,6 +60,7 @@ for i in $(cat $TMPDIR/getent.out)
 		userdeets[2]=`echo $i | awk -F: '{print $5}'`
 		# fourth is their homedir
 		userdeets[3]=`echo $i | awk -F: '{print $6}'`
+#   this can output the users total GPFS use.  Not helpful though, as will aggregate across all filesets
 #		cat $TMPDIR/mmlsfilesetu.out | awk -v username=${userdeets[0]} '$1==username{printf "%-5.2f %5-s\n",  $3/1048576,"GB"}' > ${userdeets[3]}/userquotause.txt
 		if [ ${userdeets[1]} = 701 ] # group is RR
 			then
