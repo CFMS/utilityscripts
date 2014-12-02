@@ -10,6 +10,10 @@ export TMPDIR=/tmp/gpfsquotas
 GPFSFS=mogpfs
 SCHEDNOD=mologin01
 
+#set path to include GPFS commands:
+
+export PATH=/usr/lpp/mmfs/bin:$PATH
+
 if [ ! -e $TMPDIR ]
 	then mkdir $TMPDIR
 
